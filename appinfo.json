@@ -1,0 +1,9 @@
+{
+	"id": "com.chrismondok.ubiquity",
+	"version": "0.0.1",
+	"vendor": "Chris Mondok",
+	"type": "web",
+	"main": "index.html",
+	"title": "Ubiquity",
+	"uiRevision": "2"
+}

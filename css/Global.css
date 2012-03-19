@@ -1,0 +1,17 @@
+.invalid
+{
+	background-color:rgba(255,0,0,0.2);
+}
+.valid
+{
+	background-color:rgba(0,255,0,0.2);
+}
+
+.villoBackground
+{
+	background-color:#D8D8D8;
+	background-image:url("../images/villo.png");
+	background-repeat:no-repeat;
+	background-size:contain;
+	background-position:center;
+}
