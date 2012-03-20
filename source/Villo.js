@@ -24,24 +24,24 @@ enyo.kind({
 	components:[
 		{name:"pane", kind:enyo.Pane,transitionKind:"Ubiquity.transitions.Flip", components:[
 			{name:"login", kind:enyo.VFlexBox, components:[
-				{kind:enyo.RowGroup, caption:"Log in to Villo", className:"villoBackground", components:[
-					{name:"username", kind:enyo.Input, hint:"Username"},
-					{name:"password", kind:enyo.PasswordInput, hint:"Password"},
+				{kind:enyo.RowGroup, caption:$L("Log in to Villo"), className:"villoBackground", components:[
+					{name:"username", kind:enyo.Input, hint:$L("Username")},
+					{name:"password", kind:enyo.PasswordInput, hint:$L("Password")},
 					{components:[
-						{kind:enyo.Button, caption:"Log in", onclick:"login", className:"enyo-button-dark"},
-						{kind:enyo.Button, caption:"Register", onclick:"showRegistration"},
+						{kind:enyo.Button, caption:$L("Log in"), onclick:"login", className:"enyo-button-dark"},
+						{kind:enyo.Button, caption:$L("Register"), onclick:"showRegistration"},
 					]},
 				]},
 			]},
 			{name:"register", kind:enyo.VFlexBox,components:[
-				{kind:enyo.RowGroup, caption:"Register with Villo",className:"villoBackground", components:[
-					{name:"rUsername", kind:enyo.Input, hint:"Username", onchange:"checkValid"},
-					{name:"rPassword", kind:enyo.PasswordInput, hint:"Password", onchange:"checkValid"},
-					{name:"rConfirm", kind:enyo.PasswordInput, hint:"Confirm Password", onchange:"checkValid"},
-					{name:"rEmail", kind:enyo.Input, hint:"Email address", onchange:"checkValid"},
+				{kind:enyo.RowGroup, caption:$L("Register with Villo"),className:"villoBackground", components:[
+					{name:"rUsername", kind:enyo.Input, hint:$L("Username"), onchange:"checkValid"},
+					{name:"rPassword", kind:enyo.PasswordInput, hint:$L("Password"), onchange:"checkValid"},
+					{name:"rConfirm", kind:enyo.PasswordInput, hint:$L("Confirm password"), onchange:"checkValid"},
+					{name:"rEmail", kind:enyo.Input, hint:$L("Email address"), onchange:"checkValid"},
 					{components:[
-						{name:"doRegisterButton",disabled:true, kind:enyo.Button, caption:"Register", onclick:"register", className:"enyo-button-affirmative"},
-						{kind:enyo.Button, caption:"Cancel", onclick:"showLogin"},
+						{name:"doRegisterButton",disabled:true, kind:enyo.Button, caption:$L("Register"), onclick:"register", className:"enyo-button-affirmative"},
+						{kind:enyo.Button, caption:$L("I have an account"), onclick:"showLogin"},
 					]},
 				]},
 
@@ -148,9 +148,9 @@ enyo.kind({
 	},
 	showError:function(message, title)
 	{
-		this.$.popup.caption = title;
+		this.$.popup.caption = $L(title);
 		this.$.popup.openAtCenter();
-		this.$.text.setContent(message);
+		this.$.text.setContent($L(message));
 	},
 	hidePopup:function()
 	{

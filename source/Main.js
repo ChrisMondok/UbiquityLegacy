@@ -7,11 +7,31 @@ enyo.kind({
 			{name:"Clipboard", kind:"Ubiquity.Clipboard"},
 			{name:"VilloLogin", kind:"Ubiquity.Villo", callback:this.loggedInCallback},
 		]},
-		{name:"appMenu", kind:enyo.AppMenu, components:[
-			{caption:"Preferencs"},
-			{caption:"Help"},
+		//{kind: enyo.ApplicationEvents, onOpenAppMenu:"appMenuOpened"},
+		{name:"appMenu", kind:enyo.AppMenu, onOpen:"appMenuOpened", components:[
+			{kind:enyo.EditMenu},
+			{name:"logOutMenuItem", caption:$L("Log out"), onclick:"logout"},
+			{name:"clearMenuItem",caption:$L("Clear all"), onclick:"showClearDialog"},
+			{caption:$L("Help"), disabled:true},
 		]},
+		{name:"clearDialog", kind:enyo.DialogPrompt, title:"Clear clipboard", message:"Delete all items in the clipboard?", onAccept:"clearClipboard"},
+		{
+			name:"AppManService",
+			kind:"PalmService",
+			service:"palm://com.palm.applicationManager/",
+			method:"open",
+		},
 	],
+	showClearDialog:function()
+	{
+		this.$.clearDialog.open();
+	},
+	clearClipboard:function()
+	{
+		this.$.Clipboard.items = [];
+		this.$.Clipboard.save();
+		this.$.Clipboard.notify();
+	},
 	rendered:function()
 	{
 		this.inherited(arguments);
@@ -27,35 +47,26 @@ enyo.kind({
 		this.$.pane.selectViewByName("Clipboard");
 		if(!villo.chat.isSubscribed(villo.user.token))
 		{
-			if(villo.chat.join({room:villo.user.token,callback:this.gotMessage,presence: {enabled:false}}))
-				villo.chat.history({room:villo.user.token,callback:this.gotHistory,limit:50});
-
+			villo.chat.join({room:villo.user.token,callback:this.gotMessage,presence: {enabled:false}})
 		}
-	},
-	gotHistory:function(messages)
-	{
-		for(var i = 0; i < messages.length; i++)
-			Main.clipboardComponents.push(messages[i].message);
-		Main.$.Clipboard.$.repeater.render();
-		Main.$.Clipboard.revealBottom();
+		this.$.Clipboard.load();
 	},
 	gotMessage:function(message)
 	{
-		Main.clipboardComponents.push(message.message);
-		Main.$.Clipboard.$.repeater.render();
-		Main.$.Clipboard.revealBottom();
+		Main.$.Clipboard.load();
 	},
-	sendMessage:function(string)
+	notify:function()
 	{
-		villo.chat.send({room:villo.user.token,message:string});
+		villo.chat.send({room:villo.user.token,message:"update"});
 	},
-	openAppMenuHandler:function()
+	appMenuOpened:function()
 	{
-		this.$.appMenu.open();
+		Main.$.logOutMenuItem.setDisabled(!villo.user.isLoggedIn());
+		Main.$.clearMenuItem.setDisabled(!villo.user.isLoggedIn());
 	},
-	closeAppMenuHandler:function()
+	logout:function()
 	{
-		this.$.appMenu.close();
+		villo.user.logout();
+		Main.$.pane.selectViewByName("VilloLogin");
 	},
-
 });
