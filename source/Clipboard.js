@@ -65,13 +65,18 @@ enyo.kind({
 	paste:function() //notify -> load -> render
 	{
 
-		if(this.$.input.getValue() != "")
+		if(villo.user.isLoggedIn())
 		{
-			this.items.unshift(this.$.input.getValue());
-			this.save();
-			this.notify();
+			if(this.$.input.getValue() != "")
+			{
+				this.items.unshift(this.$.input.getValue());
+				this.save();
+				this.notify();
+			}
+			this.$.input.setValue("");
 		}
-		this.$.input.setValue("");
+		else
+			Main.$.notLoggedInError.openAtCenter();
 	},
 	save:function()
 	{

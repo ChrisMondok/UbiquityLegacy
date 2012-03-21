@@ -2,7 +2,11 @@ enyo.kind({
 	name: "Ubiquity.Main",
 	kind: enyo.VFlexBox,
 	clipboardComponents:[],
+	published:{
+		launchParams:null
+	},
 	components:[
+		{kind:enyo.ApplicationEvents, onApplicationRelaunch: "relaunchHandler"},
 		{name:"pane", flex:1, kind:enyo.Pane, components:[
 			{name:"Clipboard", kind:"Ubiquity.Clipboard"},
 			{name:"VilloLogin", kind:"Ubiquity.Villo", callback:this.loggedInCallback},
@@ -21,6 +25,9 @@ enyo.kind({
 			service:"palm://com.palm.applicationManager/",
 			method:"open",
 		},
+		{name:"notLoggedInError", kind:enyo.Popup, dismissWithClick:true, dismissWithEscape:true, autoClose:true, components:[
+			{content:"You must be logged in to do that."},
+		]},
 	],
 	showClearDialog:function()
 	{
@@ -68,5 +75,15 @@ enyo.kind({
 	{
 		villo.user.logout();
 		Main.$.pane.selectViewByName("VilloLogin");
+	},
+	launchParamsChanged:function()
+	{
+		if(this.launchParams && this.launchParams.newMessage)
+			Main.$.Clipboard.$.input.setValue(this.launchParams.newMessage);
+	},
+	relaunchHandler:function()
+	{
+		if(enyo.windowParams && enyo.windowParams.newMessage)
+			Main.$.Clipboard.$.input.setValue(enyo.windowParams.newMessage);
 	},
 });

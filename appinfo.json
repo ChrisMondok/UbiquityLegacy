@@ -5,5 +5,12 @@
 	"type": "web",
 	"main": "index.html",
 	"title": "Ubiquity",
-	"uiRevision": "2"
+	"uiRevision": "2",
+	"universalSearch" : {
+		"action":{
+			"displayName" : "Add to clipboard",
+			"url" : "com.chrismondok.ubiquity",
+			"launchParam" : "newMessage"
+		}
+	}
 }

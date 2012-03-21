@@ -14,7 +14,8 @@ enyo.kind({
 	},
 	initVillo:function()
 	{
-		villo.load({id:"com.chrismondok.ubiquity",version:"0.0.1",developer:"Chris Mondok",type:"mobile",title:"Ubiquity",api:"40fc3a6308d6804da0f06dc73b0e58e1",push:true});
+		var appInfo = enyo.fetchAppInfo();
+		villo.load({id:appInfo.id,version:appInfo.version,developer:appInfo.vendor,type:"mobile",title:appInfo.title,push:true});
 	},
 });
 enyo.kind({

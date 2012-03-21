@@ -10,7 +10,11 @@
 	<body style="-webkit-perspective:1200;">
 		Hello world
 		<script type="text/javascript">
-			var Main = new Ubiquity.Main();
+			var Main = enyo.create({kind:"Ubiquity.Main"});
+			if(window.PalmSystem && enyo.windowParams)
+			{
+				Main.setLaunchParams(enyo.windowParams);
+			}
 			Main.renderInto(document.body);
 		</script>
 	</body>

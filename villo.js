@@ -26,7 +26,7 @@
 villo = ({});
 
 (function(){
-	villo.apiKey = "";
+	villo.apiKey = "40fc3a6308d6804da0f06dc73b0e58e1";
 	villo.version = "0.9.7";
 })();
 /* Villo Analytics */
