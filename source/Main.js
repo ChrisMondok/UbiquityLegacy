@@ -2,11 +2,13 @@ enyo.kind({
 	name: "Ubiquity.Main",
 	kind: enyo.VFlexBox,
 	clipboardComponents:[],
+	ID:Math.random(),
+	useBanners:true,
 	published:{
-		launchParams:null
+		launchParams:null,
 	},
 	components:[
-		{kind:enyo.ApplicationEvents, onApplicationRelaunch: "relaunchHandler"},
+		{kind:enyo.ApplicationEvents, onWindowDeactivated:"enableBanners", onWindowActivated:"disableBanners", onApplicationRelaunch: "relaunchHandler"},
 		{name:"pane", flex:1, kind:enyo.Pane, components:[
 			{name:"Clipboard", kind:"Ubiquity.Clipboard"},
 			{name:"VilloLogin", kind:"Ubiquity.Villo", callback:this.loggedInCallback},
@@ -60,11 +62,16 @@ enyo.kind({
 	},
 	gotMessage:function(message)
 	{
-		Main.$.Clipboard.load();
+		if(message.message != Main.ID)
+		{
+			Main.$.Clipboard.load();
+			if(Main.useBanners)
+				enyo.windows.addBannerMessage("Clipboard updated","{}");
+		}
 	},
 	notify:function()
 	{
-		villo.chat.send({room:villo.user.token,message:"update"});
+		villo.chat.send({room:villo.user.token,message:this.ID});
 	},
 	appMenuOpened:function()
 	{
@@ -85,5 +92,13 @@ enyo.kind({
 	{
 		if(enyo.windowParams && enyo.windowParams.newMessage)
 			Main.$.Clipboard.$.input.setValue(enyo.windowParams.newMessage);
+	},
+	enableBanners:function()
+	{
+		Main.useBanners = true;
+	},
+	disableBanners:function()
+	{
+		Main.useBanners = false;
 	},
 });

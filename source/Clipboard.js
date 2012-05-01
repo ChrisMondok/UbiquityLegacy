@@ -14,7 +14,7 @@ enyo.kind({
 		]},
 		{kind:enyo.Toolbar, components:[
 			{kind:enyo.ToolInput, name:"input", hint:$L("Type here"), flex:1},
-			{name:"pasteButton", kind:enyo.ActivityButton, onclick:"paste", caption:$L("Paste"), disabled:true},
+			{name:"pasteButton", kind:enyo.ToolButton, onclick:"paste", caption:$L("Paste")},
 		]},
 	],
 	create:function()
@@ -30,7 +30,6 @@ enyo.kind({
 	},
 	notify:function()
 	{
-		this.$.pasteButton.setActive(true);
 		Main.notify();
 	},
 	deleteItem:function(event,row) //notify -> load -> render
@@ -38,13 +37,12 @@ enyo.kind({
 		this.items.splice(row,1);
 		this.save();
 		this.notify();
+		this.render();
 	},
 	gotClipboard:function(cb)
 	{
 		var newItems = cb.storage.replace(/\\\\/g,"\\").replace(/\\\"/g,"\"");
 		Main.$.Clipboard.items = enyo.json.parse(newItems);
-		Main.$.Clipboard.$.pasteButton.setActive(false);
-		Main.$.Clipboard.$.pasteButton.setDisabled(false);
 		Main.$.Clipboard.render();
 	},
 	setupRow:function(sender,index)
@@ -60,9 +58,9 @@ enyo.kind({
 	},
 	copy:function()
 	{
-		enyo.dom.setClipboard(this.$.content.getContent());
+		enyo.dom.setClipboard(enyo.string.removeHtml(this.$.content.getContent()));
 	},
-	paste:function() //notify -> load -> render
+	paste:function() //notify 
 	{
 
 		if(villo.user.isLoggedIn())
@@ -72,6 +70,7 @@ enyo.kind({
 				this.items.unshift(this.$.input.getValue());
 				this.save();
 				this.notify();
+				this.render();
 			}
 			this.$.input.setValue("");
 		}
@@ -84,11 +83,6 @@ enyo.kind({
 		for(var i = 0; i < this.items.length; i++)
 			sanitizedItems[i] = this.items[i];
 		villo.storage.set({privacy:true,title:"clipboard",data:enyo.json.stringify(sanitizedItems)});
-	},
-	revealBottom:function(noAnimate)
-	{
-		var boundaries = this.$.scroller.getBoundaries();
-		this.$.scroller.scrollTo(boundaries.bottom,0);
 	},
 	linkClick:function(sender, inURL, event)
 	{

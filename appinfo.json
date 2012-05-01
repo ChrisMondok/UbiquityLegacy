@@ -1,6 +1,6 @@
 {
 	"id": "com.chrismondok.ubiquity",
-	"version": "0.9.0",
+	"version": "1.0.0",
 	"vendor": "Chris Mondok",
 	"type": "web",
 	"main": "index.html",
