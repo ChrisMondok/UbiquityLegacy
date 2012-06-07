@@ -4,6 +4,7 @@
 	"vendor": "Chris Mondok",
 	"type": "web",
 	"main": "index.html",
+	"icon": "images/icon.png",
 	"title": "Ubiquity",
 	"uiRevision": "2",
 	"universalSearch" : {

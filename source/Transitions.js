@@ -1,6 +1,5 @@
 enyo.kind({
 	name: "Ubiquity.transitions.Flip",
-	//* @protected
 	kind: enyo.transitions.Simple,
 	duration: 1000,
 	begin: function()
@@ -33,8 +32,7 @@ enyo.kind({
 		}
 	},
 	flip: function(inDuration, inStyle0, inStyle1, axis, scaleDifference)
-	      {
-		var self = this;
+	{
 		var t0 = -1;
 		var oldEased = 0;
 		var fn = function()
@@ -61,7 +59,7 @@ enyo.kind({
 			}
 			if (eased < 1)
 			{
-				self.handle = setTimeout(fn, 1);
+				this.handle = setTimeout(fn.bind(this), 1);
 			}
 			else
 			{
@@ -69,23 +67,18 @@ enyo.kind({
 				{
 					inStyle0.display = "none";
 				}
-				self.done();
+				this.done();
 			}
 		};
-		// allow browser to adapt to changes above before starting animation timer
-		// otherwise (on slower devices) the adaptation time is conflated with the 
-		// first frame and the animation is not smooth
-		this.handle = setTimeout(fn, 10);
+		this.handle = setTimeout(fn.bind(this),10);
 	},
 	done: function()
-	      {
+	{
 		clearTimeout(this.handle);
-		// in case we had overlapping animations, make sure we end up with the right guy displayed
 		var c = this.pane.transitioneeForView(this.toView);
 		if (c && c.hasNode())
 		{
-			var s = c.node.style;
-			s.webkitTransform = null;
+			c.node.style.webkitTransform = null;
 		}
 		this.inherited(arguments);
 	}
