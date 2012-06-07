@@ -2,9 +2,13 @@ enyo.kind({
 	name:"Ubiquity.Villo",
 	kind:"VFlexBox",
 	style:"background-color:#D8D8D8",
+	events:{
+		onLoginSuccess:"",
+		onLoginFailure:""
+	},
 	components:[
 		{kind:enyo.Pane, components:[
-			{name:"Login", kind:"Ubiquity.VilloLogin"},
+			{name:"Login", kind:"Ubiquity.VilloLogin",onLoginSuccess:"doLoginSuccess"},
 		]},
 	],
 	create:function()
@@ -22,6 +26,10 @@ enyo.kind({
 	name:"Ubiquity.VilloLogin",
 	kind:enyo.Control,
 	style:"max-width:480px; margin-left:auto; margin-right:auto;",
+	events:{
+		onLoginSuccess:"",
+		onLoginFailure:"",
+	},
 	components:[
 		{name:"pane", kind:enyo.Pane,transitionKind:"Ubiquity.transitions.Flip", components:[
 			{name:"login", kind:enyo.VFlexBox, components:[
@@ -54,7 +62,7 @@ enyo.kind({
 	],
 	login:function()
 	{
-		villo.user.login({username:this.$.username.getValue(),password:this.$.password.getValue()},this.loginCallback);
+		villo.user.login({username:this.$.username.getValue(),password:this.$.password.getValue()},this.loginCallback.bind(this));
 	},
 	showRegistration:function()
 	{
@@ -73,16 +81,16 @@ enyo.kind({
 			password_confirm:this.$.rConfirm.getValue(),
 			email:this.$.rEmail.getValue(),
 			fourvalue:true,
-			callback:this.registerCallback,
+			callback:this.registerCallback.bind(this),
 		});
 	},
 	registerCallback:function(params)
 	{
 		if(params === true)
 		{
-			Main.$.VilloLogin.$.Login.showLogin();
-			Main.$.VilloLogin.$.Login.$.username.setValue(Main.$.VilloLogin.$.Login.$.rUsername.getValue());
-			Main.$.VilloLogin.$.Login.$.password.setValue(Main.$.VilloLogin.$.Login.$.rPassword.getValue());
+			this.$.Login.showLogin();
+			this.$.Login.$.username.setValue(this.$.Login.$.rUsername.getValue());
+			this.$.Login.$.password.setValue(this.$.Login.$.rPassword.getValue());
 		}
 		else
 		{
@@ -90,15 +98,15 @@ enyo.kind({
 			if(params && params.user)
 			{
 				if(params.user.username === false)
-					Main.$.VilloLogin.$.Login.$.rUsername.addClass("invalid");
+					this.$.Login.$.rUsername.addClass("invalid");
 				if(params.user.password === false)
-					Main.$.VilloLogin.$.Login.$.rpassword.addClass("invalid");
+					this.$.Login.$.rpassword.addClass("invalid");
 				if(params.user.email === false)
-					Main.$.VilloLogin.$.Login.$.rEmail.addClass("invalid");
-				Main.$.VilloLogin.$.Login.showError("Try again","Registration error");
+					this.$.Login.$.rEmail.addClass("invalid");
+				this.$.Login.showError("Try again","Registration error");
 			}
 			else
-				Main.$.VilloLogin.$.Login.showError("A generic error occurred","Registration error");
+				this.$.Login.showError("A generic error occurred","Registration error");
 		}
 	},
 	checkValid:function(sender)
@@ -135,17 +143,18 @@ enyo.kind({
 	},
 	createAccount:function()
 	{
-		villo.user.register({username:this.$.username.getValue(),password:this.$.password.getValue(),password_confirm:this.$.password.getValue(),email:this.$.email.getValue(),callback:this.loginCallback});
+		villo.user.register({username:this.$.username.getValue(),password:this.$.password.getValue(),password_confirm:this.$.password.getValue(),email:this.$.email.getValue(),callback:this.loginCallback.bind(this)});
 	},
 	loginCallback:function(response)
 	{
+		THIS=this;
 		if(response === true)
 		{
 			if(villo.user.isLoggedIn())
-				Main.loggedInCallback();
+				this.doLoginSuccess()
 		}
 		else
-			Main.$.VilloLogin.$.Login.showError("Check username and password");
+			this.showError("Check username and password");
 	},
 	showError:function(message, title)
 	{

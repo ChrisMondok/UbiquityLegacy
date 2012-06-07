@@ -10,15 +10,15 @@ enyo.kind({
 	components:[
 		{kind:enyo.ApplicationEvents, onWindowDeactivated:"enableBanners", onWindowActivated:"disableBanners", onApplicationRelaunch: "relaunchHandler"},
 		{name:"pane", flex:1, kind:enyo.Pane, components:[
-			{name:"Clipboard", kind:"Ubiquity.Clipboard"},
-			{name:"VilloLogin", kind:"Ubiquity.Villo", callback:this.loggedInCallback},
+			{name:"Clipboard", kind:"Ubiquity.Clipboard", onNotify:"notify", onNotLoggedInError:"showNotLoggedInError", onLinkClick:"linkClick"},
+			{name:"VilloLogin", kind:"Ubiquity.Villo", onLoginSuccess:"loginSuccessful"},
 		]},
 		//{kind: enyo.ApplicationEvents, onOpenAppMenu:"appMenuOpened"},
 		{name:"appMenu", kind:enyo.AppMenu, onOpen:"appMenuOpened", components:[
 			{kind:enyo.EditMenu},
 			{name:"logOutMenuItem", caption:$L("Log out"), onclick:"logout"},
 			{name:"clearMenuItem",caption:$L("Clear all"), onclick:"showClearDialog"},
-			{caption:$L("Help"), disabled:true},
+			{kind:enyo.HelpMenu, target:"http://web.njit.edu/~cmm35/palm/help/ubiquity/"},
 		]},
 		{name:"clearDialog", kind:enyo.DialogPrompt, title:"Clear clipboard", message:"Delete all items in the clipboard?", onAccept:"clearClipboard"},
 		{
@@ -39,7 +39,8 @@ enyo.kind({
 	{
 		this.$.Clipboard.items = [];
 		this.$.Clipboard.save();
-		this.$.Clipboard.notify();
+		this.$.Clipboard.render();
+		this.notify();
 	},
 	rendered:function()
 	{
@@ -49,25 +50,34 @@ enyo.kind({
 		{
 			this.$.pane.selectViewByName("VilloLogin");
 		}
-		else(this.loggedInCallback());
+		else(this.loginSuccessful());
 	},
-	loggedInCallback:function()
+	loginSuccessful:function()
 	{
 		this.$.pane.selectViewByName("Clipboard");
 		if(!villo.chat.isSubscribed(villo.user.token))
 		{
-			villo.chat.join({room:villo.user.token,callback:this.gotMessage,presence: {enabled:false}})
+			villo.chat.join({room:villo.user.token,callback:this.gotMessage.bind(this),presence: {enabled:false}})
 		}
 		this.$.Clipboard.load();
 	},
+	showNotLoggedInError:function()
+	{
+		this.$.notLoggedInError.openAtCenter();
+		this.$.pane.selectViewByName("VilloLogin");
+	},
 	gotMessage:function(message)
 	{
-		if(message.message != Main.ID)
+		if(message.message != this.ID)
 		{
-			Main.$.Clipboard.load();
-			if(Main.useBanners)
+			this.$.Clipboard.load();
+			if(this.useBanners)
 				enyo.windows.addBannerMessage("Clipboard updated","{}");
 		}
+	},
+	goBack:function()
+	{
+		this.$.pane.back();
 	},
 	notify:function()
 	{
@@ -75,13 +85,13 @@ enyo.kind({
 	},
 	appMenuOpened:function()
 	{
-		Main.$.logOutMenuItem.setDisabled(!villo.user.isLoggedIn());
-		Main.$.clearMenuItem.setDisabled(!villo.user.isLoggedIn());
+		this.$.logOutMenuItem.setDisabled(!villo.user.isLoggedIn());
+		this.$.clearMenuItem.setDisabled(!villo.user.isLoggedIn());
 	},
 	logout:function()
 	{
 		villo.user.logout();
-		Main.$.pane.selectViewByName("VilloLogin");
+		this.$.pane.selectViewByName("VilloLogin");
 	},
 	launchParamsChanged:function()
 	{
@@ -101,4 +111,8 @@ enyo.kind({
 	{
 		Main.useBanners = false;
 	},
+	linkClick:function(inURL)
+	{
+		this.$.AppManService.call({target:inURL});
+	}
 });

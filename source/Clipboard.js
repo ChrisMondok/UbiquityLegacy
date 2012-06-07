@@ -2,6 +2,11 @@ enyo.kind({
 	name:"Ubiquity.Clipboard",
 	kind:"VFlexBox",
 	style:"background-color:#D8D8D8",
+	events:{
+		onNotify:"",
+		onNotLoggedInError:"",
+		onLinkClick:"",
+	},
 	items: [],
 	SHOW_COPY_DIALOG:false,
 	components:[
@@ -26,24 +31,20 @@ enyo.kind({
 	},
 	load:function() // render
 	{
-		villo.storage.get({privacy:true,title:"clipboard",callback:this.gotClipboard});
-	},
-	notify:function()
-	{
-		Main.notify();
+		villo.storage.get({privacy:true,title:"clipboard",callback:this.gotClipboard.bind(this)});
 	},
 	deleteItem:function(event,row) //notify -> load -> render
 	{
 		this.items.splice(row,1);
 		this.save();
-		this.notify();
+		this.doNotify();
 		this.render();
 	},
 	gotClipboard:function(cb)
 	{
 		var newItems = cb.storage.replace(/\\\\/g,"\\").replace(/\\\"/g,"\"");
-		Main.$.Clipboard.items = enyo.json.parse(newItems);
-		Main.$.Clipboard.render();
+		this.items = enyo.json.parse(newItems);
+		this.render();
 	},
 	setupRow:function(sender,index)
 	{
@@ -69,13 +70,13 @@ enyo.kind({
 			{
 				this.items.unshift(this.$.input.getValue());
 				this.save();
-				this.notify();
+				this.doNotify();
 				this.render();
 			}
 			this.$.input.setValue("");
 		}
 		else
-			Main.$.notLoggedInError.openAtCenter();
+			this.doNotLoggedInError();
 	},
 	save:function()
 	{
@@ -86,6 +87,7 @@ enyo.kind({
 	},
 	linkClick:function(sender, inURL, event)
 	{
-		Main.$.AppManService.call({target:inURL});
+		this.doLinkClick(inURL);
+		//Main.$.AppManService.call({target:inURL});
 	},
 });
