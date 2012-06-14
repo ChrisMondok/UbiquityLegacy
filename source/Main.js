@@ -61,9 +61,9 @@ enyo.kind({
 	loginSuccessful:function()
 	{
 		this.$.pane.selectViewByName("Clipboard");
-		if(!villo.chat.isSubscribed(villo.user.token))
+		if(!villo.chat.isSubscribed(villo.user.username))
 		{
-			villo.chat.join({room:villo.user.token,callback:this.gotMessage.bind(this),presence: {enabled:false}})
+			villo.chat.join({room:villo.user.username,callback:this.gotMessage.bind(this),presence: {enabled:false}})
 		}
 		this.$.Clipboard.load();
 	},
@@ -74,9 +74,10 @@ enyo.kind({
 	},
 	gotMessage:function(message)
 	{
+		console.log("Got message");
 		if(message.message != this.ID)
 		{
-			this.$.Clipboard.load();
+			setTimeout(this.$.Clipboard.load.bind(this.$.Clipboard),500);
 			if(this.useBanners)
 				enyo.windows.addBannerMessage("Clipboard updated","{}");
 		}
@@ -87,7 +88,7 @@ enyo.kind({
 	},
 	notify:function()
 	{
-		villo.chat.send({room:villo.user.token,message:this.ID});
+		villo.chat.send({room:villo.user.username,message:this.ID});
 	},
 	appMenuOpened:function()
 	{
