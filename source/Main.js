@@ -19,6 +19,7 @@ enyo.kind({
 			{name:"logOutMenuItem", caption:$L("Log out"), onclick:"logout"},
 			{name:"clearMenuItem",caption:$L("Clear all"), onclick:"showClearDialog"},
 			{kind:enyo.HelpMenu, target:"http://web.njit.edu/~cmm35/palm/help/ubiquity/"},
+			{name:"donateMenuItem", caption:$L("Donate"), onclick:"donate"},
 		]},
 		{name:"clearDialog", kind:enyo.DialogPrompt, title:"Clear clipboard", message:"Delete all items in the clipboard?", onAccept:"clearClipboard"},
 		{
@@ -30,6 +31,11 @@ enyo.kind({
 		{name:"notLoggedInError", kind:enyo.Popup, dismissWithClick:true, dismissWithEscape:true, autoClose:true, components:[
 			{content:"You must be logged in to do that."},
 		]},
+		{name:"about", kind:enyo.Popup, dismissWithEscape:true, autoClose:false, components:[
+			{kind:enyo.Header, content:"About Ubiquity"},
+			{content:"Some information goes here"},
+			{kind:enyo.HtmlContent, srcId:"donateButton"},
+		]},
 	],
 	showClearDialog:function()
 	{
@@ -39,7 +45,7 @@ enyo.kind({
 	{
 		this.$.Clipboard.items = [];
 		this.$.Clipboard.save();
-		this.$.Clipboard.render();
+		this.$.Clipboard.$.repeater.render();
 		this.notify();
 	},
 	rendered:function()
@@ -114,5 +120,9 @@ enyo.kind({
 	linkClick:function(inURL)
 	{
 		this.$.AppManService.call({target:inURL});
+	},
+	donate:function()
+	{
+		this.$.AppManService.call({target:"https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UFDJZXK5KKCHL&lc=US&item_name=Ubiquity&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted"});
 	}
 });

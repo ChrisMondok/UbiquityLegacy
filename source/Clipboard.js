@@ -18,7 +18,7 @@ enyo.kind({
 			]},
 		]},
 		{kind:enyo.Toolbar, components:[
-			{kind:enyo.ToolInput, name:"input", hint:$L("Type here"), flex:1},
+			{kind:enyo.ToolInput, name:"input", hint:$L("Type here"), flex:1,onkeyup:"inputChange"},
 			{name:"pasteButton", kind:enyo.ToolButton, onclick:"paste", caption:$L("Paste")},
 		]},
 	],
@@ -38,13 +38,13 @@ enyo.kind({
 		this.items.splice(row,1);
 		this.save();
 		this.doNotify();
-		this.render();
+		this.$.repeater.render();
 	},
 	gotClipboard:function(cb)
 	{
 		var newItems = cb.storage.replace(/\\\\/g,"\\").replace(/\\\"/g,"\"");
 		this.items = enyo.json.parse(newItems);
-		this.render();
+		this.$.repeater.render();
 	},
 	setupRow:function(sender,index)
 	{
@@ -63,7 +63,6 @@ enyo.kind({
 	},
 	paste:function() //notify 
 	{
-
 		if(villo.user.isLoggedIn())
 		{
 			if(this.$.input.getValue() != "")
@@ -71,7 +70,7 @@ enyo.kind({
 				this.items.unshift(this.$.input.getValue());
 				this.save();
 				this.doNotify();
-				this.render();
+				this.$.repeater.render();
 			}
 			this.$.input.setValue("");
 		}
@@ -89,5 +88,12 @@ enyo.kind({
 	{
 		this.doLinkClick(inURL);
 		//Main.$.AppManService.call({target:inURL});
+	},
+	inputChange:function(sender, event)
+	{
+		if(event.keyCode == 13)
+		{
+			enyo.nextTick(this.paste.bind(this));
+		}
 	},
 });
